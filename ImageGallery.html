@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Image Gallery</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #e8e8f0;
+    }
+  
+    h1 {
+      margin-top: 20px;
+      background-color: #e41f1fb9;
+      color: rgb(0, 0, 0);
+    }
+  
+    h1:hover {
+    transform: rotate(-10deg) scale(1.1);
+    }
+
+    #image-gallery {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-gap: 10px;
+      max-width: 900px;
+      margin: 20px auto;
+      align-items: center;
+      justify-content: center;
+    }
+  
+    #image-gallery .image-container {
+      position: relative;
+    }
+  
+    #image-gallery .image-container img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      max-height: 180px;
+      border: 2px solid #fff;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+      cursor: pointer;
+    }
+  
+    #image-gallery .image-container.selected img {
+      border-color: #ff3860;
+    }
+  
+    #image-gallery .image-container .caption {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 10px;
+      background-color: rgba(0, 0, 0, 0.7);
+      color: #fff;
+      font-size: 14px;
+      text-align: center;
+    }
+  
+    #image-gallery img:hover {
+      transform: scale(1.05);
+    }
+  
+    #add-image-btn {
+      margin-bottom: 20px;
+      background-color: #4caf50;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+  
+    #add-image-btn:hover {
+      background-color: #45a049;
+      transform: rotate(180deg); 
+    }
+  
+    #delete-images-btn {
+      margin-bottom: 20px;
+      background-color: #f44336;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+  
+    #delete-images-btn:hover {
+      background-color: #d32f2f;
+      transform: scale(0.9);
+    }
+  
+    .fullscreen-image {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      margin: auto;
+      z-index: 999;
+      max-width: 90%;
+      max-height: 90%;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+      object-fit: contain;
+    }
+    
+    .caption-display {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 10px;
+      background-color: rgba(0, 0, 0, 0.7);
+      color: #fff;
+      font-size: 16px;
+      text-align: center;
+      font-family: Arial, sans-serif;
+      opacity: 1;
+      transform: translateY(0);
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+  
+    .caption-display::after {
+      content: '';
+      display: block;
+      width: 100%;
+      height: 2px;
+      background-color: #ff3860;
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+    }
+  
+    .caption-display:hover::after,
+    .caption-display:focus::after {
+      transform: scaleX(1);
+    }
+
+    .loading-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #e8e8f0;
+      z-index: 9999;
+    }
+
+    .progress-bar {
+    width: 200px;
+    height: 10px;
+    background-color: #f5f5f5;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    border-radius: 5px;
+    background: linear-gradient(45deg, #ff3860, #ff9a00, #ffcd07, #189aa9, #00ff9a, #00ff9a, #00e5ff, #ffcd07, #ff9a00, #ff3860);
+    background-size: 200% 200%;
+    animation: progressAnimation 3s linear infinite;
+  }
+
+  @keyframes progressAnimation {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  
+  #music-btn {
+      position: fixed;
+      top: 75px;
+      right: 20px;
+      background-color: #2196f3;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      
+    }
+  
+    #music-btn:hover {
+      background-color: #1976d2;
+      transform: scale(1.1);
+    }
+
+    #pause-btn {
+      position: fixed;
+      top: 118px;
+      right: 35px;
+      background-color: #ca3c32;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+  
+    #pause-btn:hover {
+      background-color: #2f76d3;
+      transform: scale(1.1);
+    }
+  </style>  
+</head>
+<body>
+
+  <div class="loading-screen">
+    <div class="progress-bar">
+      <div class="progress-bar-fill"></div>
+    </div>
+    <div class="loading-message" style="font-size: 19px;">Loading...</div>
+  </div>
+
+  <h1>FatihTheDev's Gallery</h1>
+  <div id="image-gallery"></div>
+  <button id="add-image-btn">Add Image</button>
+  <button id="delete-images-btn">Delete Images</button>
+
+  <script>
+    let deleteMode = false; // Flag to track delete mode
+
+    function handleImageUpload(event) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+
+      reader.onload = function (e) {
+        const image = document.createElement("img");
+        image.src = e.target.result;
+        image.classList.add("deletable"); // Add a class to mark the image as deletable
+
+        const captionInput = document.createElement("input");
+        captionInput.type = "text";
+        captionInput.placeholder = "Enter caption";
+        captionInput.classList.add("caption-input");
+
+        const imageContainer = document.createElement("div");
+        imageContainer.classList.add("image-container");
+        imageContainer.appendChild(image);
+        imageContainer.appendChild(captionInput);
+
+        const gallery = document.getElementById("image-gallery");
+        gallery.appendChild(imageContainer);
+
+        // Save the image data and caption to localStorage
+        const imageKey = "galleryImage_" + Date.now();
+        localStorage.setItem(imageKey, JSON.stringify({ src: e.target.result, caption: "" }));
+        imageContainer.dataset.key = imageKey; // Store the image key as a data attribute
+
+        function handleCaptionInputKeyUp(event) {
+        if (event.key === "Enter") {
+            event.target.blur();
+          }
+        }
+
+        function handleCaptionInputBlur(event) {
+          const captionInput = event.target;
+          const imageContainer = captionInput.parentNode;
+          const imageInfo = JSON.parse(localStorage.getItem(imageContainer.dataset.key));
+          const captionDisplay = document.createElement("div");
+          captionDisplay.classList.add("caption-display");
+          captionDisplay.textContent = captionInput.value;
+
+          imageContainer.removeChild(captionInput);
+          imageContainer.appendChild(captionDisplay);
+
+  imageInfo.caption = captionInput.value;
+  localStorage.setItem(imageContainer.dataset.key, JSON.stringify(imageInfo));
+}
+
+captionInput.addEventListener("input", function () {
+  const imageInfo = JSON.parse(localStorage.getItem(imageContainer.dataset.key));
+  imageInfo.caption = captionInput.value;
+  localStorage.setItem(imageContainer.dataset.key, JSON.stringify(imageInfo));
+});
+
+captionInput.addEventListener("keyup", handleCaptionInputKeyUp);
+captionInput.addEventListener("blur", handleCaptionInputBlur);
+
+        // Update the click event listener for each image
+        image.addEventListener("click", function () {
+          if (deleteMode) {
+            if (imageContainer.classList.contains("selected")) {
+              imageContainer.classList.remove("selected");
+            } else {
+              imageContainer.classList.add("selected");
+            }
+          } else {
+            const gallery = document.getElementById("image-gallery");
+            const fullscreenImage = image.cloneNode(true);
+
+            // Add the fullscreen-image class to the cloned image
+            fullscreenImage.classList.add("fullscreen-image");
+
+            // Hide other images in the gallery
+            gallery.style.display = "none";
+
+            // Append the fullscreen image to the body
+            document.body.appendChild(fullscreenImage);
+
+            let scaleFactor = 1.0;
+
+            fullscreenImage.addEventListener("wheel", function (event) {
+              event.preventDefault();
+
+              const delta = Math.max(-1, Math.min(1, event.deltaY || -event.detail));
+
+              // Limit the minimum scale factor to prevent excessive shrinking
+              if (scaleFactor + delta * 0.1 >= 0.2) {
+                scaleFactor += delta * 0.1;
+              }
+
+              fullscreenImage.style.transform = `scale(${scaleFactor})`;
+            });
+
+            fullscreenImage.addEventListener("click", function () {
+              gallery.style.display = ""; // Show the gallery again
+              fullscreenImage.parentNode.removeChild(fullscreenImage); // Remove the fullscreen image
+            });
+          }
+        });
+
+        // Update the caption when the input value changes
+        captionInput.addEventListener("input", function () {
+          const imageInfo = JSON.parse(localStorage.getItem(imageContainer.dataset.key));
+          imageInfo.caption = captionInput.value;
+          localStorage.setItem(imageContainer.dataset.key, JSON.stringify(imageInfo));
+        });
+      };
+
+      reader.readAsDataURL(file);
+    }
+
+    const addImageButton = document.getElementById("add-image-btn");
+    addImageButton.addEventListener("click", function () {
+      const fileInput = document.createElement("input");
+      fileInput.type = "file";
+      fileInput.accept = "image/*";
+      fileInput.style.display = "none";
+
+      fileInput.addEventListener("change", handleImageUpload);
+
+      document.body.appendChild(fileInput);
+      fileInput.click();
+      document.body.removeChild(fileInput);
+    });
+
+    const deleteImagesButton = document.getElementById("delete-images-btn");
+    deleteImagesButton.addEventListener("click", function () {
+      deleteMode = !deleteMode; // Toggle delete mode on and off
+
+      const imageContainers = document.querySelectorAll("#image-gallery .image-container");
+      imageContainers.forEach(function (imageContainer) {
+        imageContainer.classList.remove("selected"); // Deselect all images initially
+      });
+
+      if (deleteMode) {
+        document.body.style.backgroundColor = "rgba(0, 0, 0, 0.5)"; // Darken the body color
+      } else {
+        document.body.style.backgroundColor = ""; // Reset the body color
+      }
+    });
+
+    document.addEventListener("keydown", function (event) {
+      if (deleteMode && event.key === "Delete") {
+        const selectedImageContainers = document.querySelectorAll("#image-gallery .image-container.selected");
+        if (selectedImageContainers.length > 0) {
+          selectedImageContainers.forEach(function (imageContainer) {
+            imageContainer.parentNode.removeChild(imageContainer);
+
+            // Remove the corresponding entry from localStorage
+            const imageKey = imageContainer.dataset.key;
+            localStorage.removeItem(imageKey);
+          });
+
+          deleteMode = false; // Turn off delete mode after deleting images
+          document.body.style.backgroundColor = ""; // Reset the body color
+        }
+      }
+    });
+
+    // Wait for the DOM to be fully loaded
+    document.addEventListener("DOMContentLoaded", function () {
+      const gallery = document.getElementById("image-gallery");
+
+      // Retrieve image data and captions from localStorage and populate the gallery
+      Object.keys(localStorage).forEach(function (key) {
+        if (key.startsWith("galleryImage_")) {
+          const imageInfo = JSON.parse(localStorage.getItem(key));
+
+          const image = document.createElement("img");
+          image.src = imageInfo.src;
+          image.classList.add("deletable");
+
+          const captionInput = document.createElement("input");
+          captionInput.type = "text";
+          captionInput.value = imageInfo.caption;
+          captionInput.classList.add("caption-input");
+
+          const imageContainer = document.createElement("div");
+          imageContainer.classList.add("image-container");
+          imageContainer.appendChild(image);
+          imageContainer.appendChild(captionInput);
+          imageContainer.dataset.key = key; // Store the image key as a data attribute
+
+          gallery.appendChild(imageContainer);
+
+          // Update the click event listener for each image
+          image.addEventListener("click", function () {
+            if (deleteMode) {
+              if (imageContainer.classList.contains("selected")) {
+                imageContainer.classList.remove("selected");
+              } else {
+                imageContainer.classList.add("selected");
+              }
+            } else {
+              const fullscreenImage = image.cloneNode(true);
+
+              // Add the fullscreen-image class to the cloned image
+              fullscreenImage.classList.add("fullscreen-image");
+
+              // Hide other images in the gallery
+              gallery.style.display = "none";
+
+              // Append the fullscreen image to the body
+              document.body.appendChild(fullscreenImage);
+
+              let scaleFactor = 1.0;
+
+              fullscreenImage.addEventListener("wheel", function (event) {
+                event.preventDefault();
+
+                const delta = Math.max(-1, Math.min(1, event.deltaY || -event.detail));
+
+                // Limit the minimum scale factor to prevent excessive shrinking
+                if (scaleFactor + delta * 0.1 >= 0.2) {
+                  scaleFactor += delta * 0.1;
+                }
+
+                fullscreenImage.style.transform = `scale(${scaleFactor})`;
+              });
+
+              fullscreenImage.addEventListener("click", function () {
+                gallery.style.display = ""; // Show the gallery again
+                fullscreenImage.parentNode.removeChild(fullscreenImage); // Remove the fullscreen image
+              });
+            }
+          });
+
+          // Update the caption when the input value changes
+          captionInput.addEventListener("input", function () {
+            imageInfo.caption = captionInput.value;
+            localStorage.setItem(key, JSON.stringify(imageInfo));
+          });
+        }
+      });
+    });
+
+     // Hide the loading screen after 2 to 5 seconds
+     const loadingScreen = document.querySelector('.loading-screen');
+    const progressBarFill = document.querySelector('.progress-bar-fill');
+    const loadingMessage = document.querySelector('.loading-message');
+
+    const loadingTime = Math.floor(Math.random() * 4000) + 2000; // Random duration between 2 to 5 seconds
+    const animationDuration = 300; // Duration of the progress bar animation in milliseconds
+    const intervalTime = 50; // Interval time for updating the progress bar
+
+    let progress = 0;
+    const increment = 100 / (loadingTime / intervalTime);
+
+    const interval = setInterval(function () {
+      progress += increment;
+      progressBarFill.style.width = `${progress}%`;
+
+      if (progress >= 100) {
+        clearInterval(interval);
+        loadingScreen.style.display = 'none';
+      }
+    }, intervalTime);
+
+
+
+    const songs = ["Tevvez - Glimmer of Hope hardstyle.mp3", "Tevvez - Legend.mp3", "Goofy Ahh Beat 2.mp3"]; 
+
+    window.addEventListener("DOMContentLoaded", function () {
+      const loadingScreen = document.getElementById("loading-screen");
+      const randomIndex = Math.floor(Math.random() * songs.length); // Generate a random index
+      const randomSong = songs[randomIndex]; // Get the random song filename
+
+    });
+  </script>
+</body>
+</html>
+

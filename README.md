@@ -1,8 +1,8 @@
-#Image Gallery
+**Image Gallery**
 
 This is a simple image gallery web app that allows users to upload images, add captions, view images fullscreen, and delete images.
 
-#Features
+**Features**
 
 Upload images from local device
 Add captions to images
@@ -10,7 +10,8 @@ View images full-screen with zoom
 Delete images
 Progress bar loading animation
 
-#Usage
+
+**Usage**
 
 To use the gallery:
 
@@ -35,7 +36,8 @@ To use the gallery:
 -Page will show a loading animation on startup while images load
 
 
-Built With:
+
+**Built With:**
 
 -HTML
 
